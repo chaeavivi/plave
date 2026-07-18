@@ -360,16 +360,27 @@ async function fetchMeta(){
     }catch(e){ /* 무시하고 직접 입력 안내 */ }
   }
 
+  // 차단/오류 페이지 제목이면 걸러낸다 (쿠팡 "Sorry! Access denied" 등)
+  if(looksBlocked(title)){ title = ""; image = ""; }
+
   if(title) document.getElementById("f_title").value = title.slice(0,200);
   if(image){ document.getElementById("f_image").value = image; syncPreview(); }
 
   if(title || image){
     hint.textContent = "가져왔어요! 확인하고 수정하세요." + (image ? "" : " (이미지는 직접 넣어주세요)");
   } else {
-    hint.innerHTML = "이 사이트는 자동 추출이 막혀 있어요(쿠팡·네이버 등에서 자주 그래요). " +
+    hint.innerHTML = "이 사이트(쿠팡·네이버 등)는 자동 추출을 막아둬서 못 가져왔어요. " +
       "<b>제목만 입력해도 바로 등록</b>됩니다. 이미지는 상품페이지 사진에서 우클릭 → " +
       "'이미지 주소 복사' 후 아래 '이미지 URL'에 붙여넣으세요.";
   }
+}
+
+// 봇 차단/오류 페이지에서 흔히 나오는 제목이면 true (그 값은 버린다)
+function looksBlocked(t){
+  if(!t) return false;
+  const s = t.toLowerCase().trim();
+  if(s.length < 2) return true;
+  return /access denied|sorry|forbidden|not found|error|robot|captcha|just a moment|are you a human|접근|차단|권한|잠시만|확인이 필요|비정상/.test(s);
 }
 
 async function saveItem(){
