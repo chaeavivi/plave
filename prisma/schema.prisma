@@ -1,0 +1,26 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Item {
+  id          String   @id @default(cuid())
+  title       String
+  description String? // 추천 이유(글)
+  url         String // 원본 상품 링크
+  imageUrl    String?
+  price       Int? // 원 단위
+  currency    String   @default("KRW")
+  category    String // 카테고리 (lib/categories.ts 참고)
+  sourceSite  String? // 출처 (쿠팡/네이버 등)
+  authorName  String // 작성자 닉네임
+  likes       Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  @@index([category])
+  @@index([createdAt])
+}
