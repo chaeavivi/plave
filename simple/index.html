@@ -1,0 +1,389 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>추천템 — 우리끼리 추천 아이템 공유</title>
+<style>
+  :root { --brand:#ff5a5f; --brand-dark:#e04347; --line:#eceff1; --muted:#8a94a6; }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+         background:#f6f7f9; color:#1c2430; -webkit-font-smoothing:antialiased; }
+  a { color:inherit; }
+  header.top { position:sticky; top:0; z-index:20; background:rgba(255,255,255,.9); backdrop-filter:blur(8px);
+               border-bottom:1px solid var(--line); }
+  .wrap { max-width:960px; margin:0 auto; padding:0 16px; }
+  .bar { display:flex; align-items:center; justify-content:space-between; height:56px; }
+  .logo { font-size:19px; font-weight:800; color:var(--brand); text-decoration:none; }
+  .btn { border:none; cursor:pointer; border-radius:999px; font-weight:700; font-size:14px; }
+  .btn-primary { background:var(--brand); color:#fff; padding:9px 16px; }
+  .btn-primary:hover { background:var(--brand-dark); }
+  .modechip { font-size:12px; color:var(--muted); display:flex; align-items:center; gap:6px; }
+  .dot { width:8px; height:8px; border-radius:50%; background:#c7ccd6; display:inline-block; }
+  .dot.on { background:#22c55e; }
+
+  main { padding:18px 0 60px; }
+  h1.title { font-size:22px; margin:6px 0 2px; }
+  p.sub { margin:0 0 14px; color:var(--muted); font-size:14px; }
+
+  .tabs { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:14px; }
+  .tab { border:1px solid var(--line); background:#fff; color:#3a4453; border-radius:999px; padding:7px 12px;
+         font-size:13px; cursor:pointer; }
+  .tab.active { background:var(--brand); color:#fff; border-color:var(--brand); }
+
+  .meta-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+  .count { color:var(--muted); font-size:13px; }
+
+  .grid { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; }
+  @media(min-width:640px){ .grid{ grid-template-columns:repeat(3,1fr);} }
+  @media(min-width:860px){ .grid{ grid-template-columns:repeat(4,1fr);} }
+
+  .card { background:#fff; border:1px solid var(--line); border-radius:16px; overflow:hidden; display:flex; flex-direction:column; }
+  .card.checked { opacity:.55; }
+  .thumb { position:relative; aspect-ratio:1/1; background:#f0f2f5; }
+  .thumb img { width:100%; height:100%; object-fit:cover; display:block; }
+  .thumb .ph { width:100%; height:100%; display:flex; align-items:center; justify-content:center; font-size:34px; color:#cbd2dc; }
+  .cat-badge { position:absolute; left:8px; top:8px; background:rgba(0,0,0,.6); color:#fff; font-size:11px;
+               padding:2px 8px; border-radius:999px; }
+  .check-badge { position:absolute; right:8px; top:8px; background:#22c55e; color:#fff; font-size:11px;
+                 padding:2px 8px; border-radius:999px; display:none; }
+  .card.checked .check-badge { display:block; }
+  .body { padding:10px; display:flex; flex-direction:column; gap:4px; flex:1; }
+  .name { font-size:13px; font-weight:700; line-height:1.35; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+  .price { font-size:15px; font-weight:800; color:var(--brand); }
+  .note { font-size:12px; color:#6b7383; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+  .who { font-size:11px; color:var(--muted); margin-top:2px; }
+  .actions { display:flex; gap:6px; margin-top:8px; }
+  .actions a, .actions button { flex:1; text-align:center; border-radius:9px; font-size:12px; padding:8px 0; font-weight:700;
+                                text-decoration:none; border:1px solid var(--line); background:#fff; color:#3a4453; cursor:pointer; }
+  .actions a.buy { background:var(--brand); color:#fff; border-color:var(--brand); }
+  .actions button.chk.on { background:#e8f9ee; color:#16a34a; border-color:#b8ebc7; }
+  .del { position:absolute; right:8px; bottom:8px; background:rgba(255,255,255,.9); border:1px solid var(--line);
+         border-radius:8px; font-size:11px; padding:3px 7px; cursor:pointer; color:#96a; display:none; }
+  .card:hover .del { display:block; }
+
+  .empty { text-align:center; color:var(--muted); border:1px dashed #d7dce3; border-radius:16px; padding:48px 16px; }
+
+  /* modal */
+  .overlay { position:fixed; inset:0; background:rgba(15,20,30,.45); display:none; align-items:flex-start; justify-content:center;
+             padding:24px 12px; z-index:40; overflow:auto; }
+  .overlay.show { display:flex; }
+  .sheet { background:#fff; width:100%; max-width:480px; border-radius:18px; padding:18px; }
+  .sheet h2 { margin:0 0 12px; font-size:18px; }
+  label { display:block; font-size:13px; font-weight:700; margin:12px 0 5px; }
+  input, textarea, select { width:100%; border:1px solid #d7dce3; border-radius:10px; padding:10px 11px; font-size:14px;
+                            font-family:inherit; }
+  input:focus, textarea:focus { outline:none; border-color:var(--brand); }
+  .row { display:flex; gap:8px; }
+  .row > div { flex:1; }
+  .fetch { display:flex; gap:8px; }
+  .fetch button { white-space:nowrap; background:#1c2430; color:#fff; border:none; border-radius:10px; padding:0 14px; font-weight:700; cursor:pointer; }
+  .catpick { display:flex; flex-wrap:wrap; gap:7px; }
+  .catpick .tab.active { background:var(--brand); color:#fff; border-color:var(--brand); }
+  .hint { font-size:12px; color:var(--muted); margin-top:6px; }
+  .err { background:#fff1f1; color:#d92d2d; font-size:13px; padding:9px 11px; border-radius:10px; margin-top:12px; }
+  .preview { width:64px; height:64px; border-radius:10px; object-fit:cover; border:1px solid var(--line); }
+  .submit { width:100%; margin-top:16px; background:var(--brand); color:#fff; border:none; border-radius:12px; padding:13px; font-weight:800; font-size:15px; cursor:pointer; }
+  .x { float:right; border:none; background:none; font-size:20px; cursor:pointer; color:#9aa; }
+  footer { text-align:center; color:#b3bac6; font-size:12px; padding:30px 0; }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap bar">
+    <a href="#" class="logo" onclick="return false">🛍️ 추천템</a>
+    <div style="display:flex;align-items:center;gap:12px">
+      <span class="modechip"><span id="modeDot" class="dot"></span><span id="modeText">저장 확인 중…</span></span>
+      <button class="btn btn-primary" onclick="openForm()">+ 등록</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <h1 class="title">우리끼리 추천템</h1>
+  <p class="sub">링크만 붙여넣으면 이미지가 자동으로! 사러 갈 땐 <b>체크</b>로 표시해요.</p>
+
+  <div id="tabs" class="tabs"></div>
+
+  <div class="meta-row">
+    <span id="count" class="count"></span>
+  </div>
+
+  <div id="grid" class="grid"></div>
+  <div id="empty" class="empty" style="display:none">
+    아직 등록된 추천템이 없어요.<br/>
+    <button class="btn btn-primary" style="margin-top:12px" onclick="openForm()">첫 추천템 등록하기</button>
+  </div>
+</main>
+
+<footer>링크 붙여넣기 → 자동 채움 · 서버 없이 브라우저에서 동작</footer>
+
+<!-- 등록 모달 -->
+<div id="overlay" class="overlay">
+  <div class="sheet">
+    <button class="x" onclick="closeForm()">✕</button>
+    <h2>추천템 등록</h2>
+
+    <label>상품 링크</label>
+    <div class="fetch">
+      <input id="f_url" type="url" placeholder="쿠팡·네이버 등 상품 링크 붙여넣기" />
+      <button type="button" onclick="fetchMeta()">가져오기</button>
+    </div>
+    <p id="fetchHint" class="hint"></p>
+
+    <div id="previewWrap" style="display:none;align-items:center;gap:10px;margin-top:10px">
+      <img id="f_preview" class="preview" alt="" />
+      <span class="hint">이미지 미리보기</span>
+    </div>
+
+    <label>제목</label>
+    <input id="f_title" placeholder="상품명" />
+
+    <div class="row">
+      <div>
+        <label>가격(원)</label>
+        <input id="f_price" inputmode="numeric" placeholder="예: 12900" />
+      </div>
+      <div>
+        <label>이미지 URL</label>
+        <input id="f_image" placeholder="자동 또는 직접 입력" oninput="syncPreview()" />
+      </div>
+    </div>
+
+    <label>카테고리</label>
+    <div id="catpick" class="catpick"></div>
+
+    <label>추천 이유 (선택)</label>
+    <textarea id="f_note" rows="2" placeholder="왜 추천하나요?"></textarea>
+
+    <label>닉네임</label>
+    <input id="f_author" maxlength="20" placeholder="익명" />
+
+    <div id="formErr" class="err" style="display:none"></div>
+    <button class="submit" onclick="saveItem()">추천템 등록하기</button>
+  </div>
+</div>
+
+<!-- Firebase (공유 모드에서만 사용) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+/* =========================================================================
+   [공유 설정] 여러 명이 함께 쓰려면 아래 firebaseConfig 를 채우세요.
+   비워두면 "이 기기에만 저장"(localStorage) 으로 혼자 테스트할 수 있어요.
+   설정 방법은 README.md 참고 (5분, 무료).
+   ========================================================================= */
+const firebaseConfig = {
+  apiKey: "",
+  authDomain: "",
+  projectId: "",
+  // storageBucket / messagingSenderId / appId 는 없어도 동작합니다.
+};
+
+const CATEGORIES = [
+  { slug:"fashion", label:"패션", emoji:"👕" },
+  { slug:"beauty", label:"뷰티", emoji:"💄" },
+  { slug:"electronics", label:"전자기기", emoji:"🔌" },
+  { slug:"living", label:"생활/주방", emoji:"🍳" },
+  { slug:"food", label:"식품", emoji:"🍎" },
+  { slug:"hobby", label:"취미/문구", emoji:"🎨" },
+  { slug:"etc", label:"기타", emoji:"📦" },
+];
+const catLabel = (s)=> (CATEGORIES.find(c=>c.slug===s)||{label:"기타"}).label;
+
+/* ---------- 저장소 추상화 (Firebase 공유 / localStorage 단독) ---------- */
+let SHARED = false, db = null;
+const LS_KEY = "chuchentem_items";
+
+function initStore(onChange){
+  if (firebaseConfig.apiKey && firebaseConfig.projectId) {
+    try {
+      firebase.initializeApp(firebaseConfig);
+      db = firebase.firestore();
+      SHARED = true;
+      db.collection("items").orderBy("createdAt","desc").onSnapshot(snap=>{
+        const items = snap.docs.map(d=>({ id:d.id, ...d.data() }));
+        onChange(items);
+      }, err=>{ console.error(err); });
+      setMode(true);
+      return;
+    } catch(e){ console.error("Firebase 초기화 실패, 로컬 모드로 전환:", e); }
+  }
+  // 로컬 모드
+  SHARED = false; setMode(false);
+  onChange(readLocal());
+  window.addEventListener("storage", ()=> onChange(readLocal()));
+}
+function readLocal(){
+  try { return JSON.parse(localStorage.getItem(LS_KEY)||"[]"); } catch { return []; }
+}
+function writeLocal(items){ localStorage.setItem(LS_KEY, JSON.stringify(items)); }
+
+async function addItemStore(item){
+  if (SHARED){ await db.collection("items").add(item); }
+  else {
+    const items = readLocal();
+    items.unshift({ id:"local_"+Date.now(), ...item });
+    writeLocal(items); render(items);
+  }
+}
+async function updateItemStore(id, patch){
+  if (SHARED){ await db.collection("items").doc(id).update(patch); }
+  else {
+    const items = readLocal().map(it=> it.id===id ? {...it, ...patch} : it);
+    writeLocal(items); render(items);
+  }
+}
+async function deleteItemStore(id){
+  if (SHARED){ await db.collection("items").doc(id).delete(); }
+  else {
+    const items = readLocal().filter(it=> it.id!==id);
+    writeLocal(items); render(items);
+  }
+}
+
+function setMode(shared){
+  document.getElementById("modeDot").className = "dot" + (shared?" on":"");
+  document.getElementById("modeText").textContent = shared ? "공유 중" : "이 기기에만 저장";
+}
+
+/* ---------- 상태 & 렌더 ---------- */
+let ALL = [];
+let activeCat = "";
+
+function render(items){
+  ALL = items;
+  const list = activeCat ? items.filter(i=>i.category===activeCat) : items;
+  document.getElementById("count").textContent = `${list.length}개`;
+  const grid = document.getElementById("grid");
+  const empty = document.getElementById("empty");
+  if (list.length===0){ grid.innerHTML=""; empty.style.display="block"; return; }
+  empty.style.display="none";
+  grid.innerHTML = list.map(cardHTML).join("");
+}
+
+function cardHTML(it){
+  const img = it.imageUrl
+    ? `<img src="${esc(it.imageUrl)}" alt="" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/><div class="ph" style="display:none">🛍️</div>`
+    : `<div class="ph">🛍️</div>`;
+  const price = it.price ? Number(it.price).toLocaleString("ko-KR")+"원" : "가격 정보 없음";
+  return `
+  <div class="card ${it.checked?'checked':''}">
+    <div class="thumb">
+      ${img}
+      <span class="cat-badge">${esc(catLabel(it.category))}</span>
+      <span class="check-badge">✔ 체크함</span>
+      <button class="del" onclick="delItem('${it.id}')">삭제</button>
+    </div>
+    <div class="body">
+      <div class="name">${esc(it.title||"제목 없음")}</div>
+      <div class="price">${price}</div>
+      ${it.note?`<div class="note">${esc(it.note)}</div>`:""}
+      <div class="who">by ${esc(it.author||"익명")}</div>
+      <div class="actions">
+        <a class="buy" href="${esc(it.url)}" target="_blank" rel="noopener noreferrer nofollow">사러가기</a>
+        <button class="chk ${it.checked?'on':''}" onclick="toggleCheck('${it.id}', ${it.checked?1:0})">${it.checked?'체크됨':'체크'}</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function esc(s){ return String(s??"").replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+
+function buildTabs(){
+  const tabs = [{slug:"",label:"전체",emoji:"✨"}, ...CATEGORIES];
+  document.getElementById("tabs").innerHTML = tabs.map(t=>
+    `<button class="tab ${activeCat===t.slug?'active':''}" onclick="setCat('${t.slug}')">${t.emoji} ${t.label}</button>`
+  ).join("");
+}
+function setCat(slug){ activeCat=slug; buildTabs(); render(ALL); }
+
+function toggleCheck(id, cur){ updateItemStore(id, { checked: !cur }); }
+function delItem(id){ if(confirm("삭제할까요?")) deleteItemStore(id); }
+
+/* ---------- 등록 폼 ---------- */
+let formCat = "";
+function openForm(){
+  formCat=""; buildCatPick();
+  ["f_url","f_title","f_price","f_image","f_note","f_author"].forEach(id=>document.getElementById(id).value="");
+  document.getElementById("previewWrap").style.display="none";
+  document.getElementById("fetchHint").textContent="";
+  hideErr();
+  document.getElementById("overlay").classList.add("show");
+}
+function closeForm(){ document.getElementById("overlay").classList.remove("show"); }
+function buildCatPick(){
+  document.getElementById("catpick").innerHTML = CATEGORIES.map(c=>
+    `<button type="button" class="tab ${formCat===c.slug?'active':''}" onclick="pickCat('${c.slug}')">${c.emoji} ${c.label}</button>`
+  ).join("");
+}
+function pickCat(s){ formCat=s; buildCatPick(); }
+
+function syncPreview(){
+  const url = document.getElementById("f_image").value.trim();
+  const wrap = document.getElementById("previewWrap");
+  if(url){ document.getElementById("f_preview").src=url; wrap.style.display="flex"; }
+  else wrap.style.display="none";
+}
+
+async function fetchMeta(){
+  hideErr();
+  const url = document.getElementById("f_url").value.trim();
+  const hint = document.getElementById("fetchHint");
+  if(!url){ showErr("먼저 상품 링크를 붙여넣어 주세요."); return; }
+  hint.textContent = "가져오는 중…";
+  try{
+    const res = await fetch("https://api.microlink.io/?url="+encodeURIComponent(url));
+    const json = await res.json();
+    if(json.status==="success"){
+      const d = json.data;
+      if(d.title) document.getElementById("f_title").value = d.title;
+      const img = (d.image&&d.image.url) || (d.logo&&d.logo.url) || "";
+      if(img){ document.getElementById("f_image").value = img; syncPreview(); }
+      hint.textContent = (d.title||img) ? "가져왔어요! 내용을 확인하고 수정하세요." : "정보를 못 찾았어요. 직접 입력해 주세요.";
+    } else {
+      hint.textContent = "정보를 못 가져왔어요. 제목·이미지를 직접 입력해 주세요.";
+    }
+  }catch(e){
+    hint.textContent = "가져오기에 실패했어요. 직접 입력해 주세요.";
+  }
+}
+
+async function saveItem(){
+  hideErr();
+  const url = document.getElementById("f_url").value.trim();
+  const title = document.getElementById("f_title").value.trim();
+  const priceRaw = document.getElementById("f_price").value.replace(/[^0-9]/g,"");
+  const image = document.getElementById("f_image").value.trim();
+  const note = document.getElementById("f_note").value.trim();
+  const author = document.getElementById("f_author").value.trim() || "익명";
+
+  if(!title){ showErr("제목을 입력해 주세요."); return; }
+  try{ new URL(url); }catch{ showErr("올바른 상품 링크를 입력해 주세요."); return; }
+  if(!formCat){ showErr("카테고리를 선택해 주세요."); return; }
+
+  await addItemStore({
+    title: title.slice(0,200),
+    url, imageUrl: image||null,
+    price: priceRaw? Number(priceRaw): null,
+    category: formCat,
+    note: note? note.slice(0,500): null,
+    author: author.slice(0,20),
+    checked: false,
+    createdAt: SHARED ? firebase.firestore.FieldValue.serverTimestamp() : Date.now(),
+  });
+  closeForm();
+}
+
+function showErr(m){ const e=document.getElementById("formErr"); e.textContent=m; e.style.display="block"; }
+function hideErr(){ document.getElementById("formErr").style.display="none"; }
+
+/* 오버레이 바깥 클릭 시 닫기 */
+document.getElementById("overlay").addEventListener("click", e=>{ if(e.target.id==="overlay") closeForm(); });
+
+/* ---------- 시작 ---------- */
+buildTabs();
+initStore(render);
+</script>
+</body>
+</html>
