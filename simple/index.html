@@ -331,21 +331,44 @@ async function fetchMeta(){
   const url = document.getElementById("f_url").value.trim();
   const hint = document.getElementById("fetchHint");
   if(!url){ showErr("먼저 상품 링크를 붙여넣어 주세요."); return; }
-  hint.textContent = "가져오는 중…";
+  hint.textContent = "가져오는 중… (몇 초 걸릴 수 있어요)";
+  let title = "", image = "";
+
+  // 방법 1) microlink API
   try{
     const res = await fetch("https://api.microlink.io/?url="+encodeURIComponent(url));
     const json = await res.json();
-    if(json.status==="success"){
-      const d = json.data;
-      if(d.title) document.getElementById("f_title").value = d.title;
-      const img = (d.image&&d.image.url) || (d.logo&&d.logo.url) || "";
-      if(img){ document.getElementById("f_image").value = img; syncPreview(); }
-      hint.textContent = (d.title||img) ? "가져왔어요! 내용을 확인하고 수정하세요." : "정보를 못 찾았어요. 직접 입력해 주세요.";
-    } else {
-      hint.textContent = "정보를 못 가져왔어요. 제목·이미지를 직접 입력해 주세요.";
+    if(json && json.status==="success" && json.data){
+      title = json.data.title || "";
+      image = (json.data.image && json.data.image.url) || (json.data.logo && json.data.logo.url) || "";
     }
-  }catch(e){
-    hint.textContent = "가져오기에 실패했어요. 직접 입력해 주세요.";
+  }catch(e){ /* 다음 방법 시도 */ }
+
+  // 방법 2) CORS 프록시로 HTML을 직접 받아 og 태그 파싱 (일부 사이트에서 더 잘 됨)
+  if(!title || !image){
+    try{
+      const proxy = "https://api.allorigins.win/raw?url=" + encodeURIComponent(url);
+      const html = await (await fetch(proxy)).text();
+      const doc = new DOMParser().parseFromString(html, "text/html");
+      const m = (sel)=> (doc.querySelector(sel)?.getAttribute("content") || "").trim();
+      if(!title) title = m('meta[property="og:title"]') || m('meta[name="twitter:title"]')
+                         || (doc.querySelector("title")?.textContent || "").trim();
+      if(!image){
+        let im = m('meta[property="og:image"]') || m('meta[name="twitter:image"]') || m('meta[name="twitter:image:src"]');
+        if(im){ try{ im = new URL(im, url).href; }catch(e){} image = im; }
+      }
+    }catch(e){ /* 무시하고 직접 입력 안내 */ }
+  }
+
+  if(title) document.getElementById("f_title").value = title.slice(0,200);
+  if(image){ document.getElementById("f_image").value = image; syncPreview(); }
+
+  if(title || image){
+    hint.textContent = "가져왔어요! 확인하고 수정하세요." + (image ? "" : " (이미지는 직접 넣어주세요)");
+  } else {
+    hint.innerHTML = "이 사이트는 자동 추출이 막혀 있어요(쿠팡·네이버 등에서 자주 그래요). " +
+      "<b>제목만 입력해도 바로 등록</b>됩니다. 이미지는 상품페이지 사진에서 우클릭 → " +
+      "'이미지 주소 복사' 후 아래 '이미지 URL'에 붙여넣으세요.";
   }
 }
 
