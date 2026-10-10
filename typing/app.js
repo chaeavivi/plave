@@ -10,7 +10,9 @@
     하민: { color: "#2ECC71", emoji: "💚" },
   };
   const PLLI_COLOR = "#FFFFFF";
-  const MEMBER_RE = /\[(예준|노아|밤비|은호|하민)\]/g;
+  const ALL = "PLAVE";
+  const MEMBER_ORDER = ["예준", "노아", "밤비", "은호", "하민"];
+  const MEMBER_RE = /\[(예준|노아|밤비|은호|하민|PLAVE|PALVE|플리)\]/gi;
   const TIME_RE = /\[([^\]]*\d{1,2}:\d{2}[^\]]*)\]/g;
   const FREE_RE = /^(함성|환호)\s*!?$/;
   const PASS_ACCURACY = 95;
@@ -107,7 +109,11 @@
       if (!s) continue;
       const times = [];
       s = s.replace(TIME_RE, (_, t) => { times.push(t.trim()); return " "; });
-      s = s.replace(MEMBER_RE, (_, name) => { member = name; return " "; });
+      s = s.replace(MEMBER_RE, (_, name) => {
+        const n = name.toUpperCase();
+        member = n === "PLAVE" || n === "PALVE" ? ALL : name === "플리" ? null : name;
+        return " ";
+      });
       s = s.trim();
       if (!s) { if (times.length) pendingTime = times[0]; continue; }
       const time = times[0] || pendingTime; pendingTime = null;
@@ -161,6 +167,8 @@
   const speed = () => Math.round(S.strokesOk / Math.max(elapsedMs() / 60000, 1 / 60));
   const progress = () => (S.lines.length ? Math.round((S.idx / S.lines.length) * 100) : 0);
   const memberColor = (m) => (m && MEMBERS[m] ? MEMBERS[m].color : PLLI_COLOR);
+  const RAINBOW = `linear-gradient(90deg, ${MEMBER_ORDER.map((m) => MEMBERS[m].color).join(", ")})`;
+  const rainbowColor = (i) => MEMBERS[MEMBER_ORDER[i % MEMBER_ORDER.length]].color;
 
   function startTimer() {
     if (S.runningSince || S.paused || S.finished) return;
@@ -284,10 +292,16 @@
   }
 
   function partBadge(member) {
-    const wrap = h("div", "part" + (member ? "" : " plli"));
+    const wrap = h("div", "part" + (member ? "" : " plli") + (member === ALL ? " all" : ""));
     wrap.style.setProperty("--c", memberColor(member));
     const box = h("div", "box");
-    box.append(h("span", "d"), h("span", "n", member || "플리"), h("span", "t", "PART"));
+    if (member === ALL) {
+      const dots = h("span", "dots");
+      MEMBER_ORDER.forEach((m) => { const d = h("i"); d.style.background = MEMBERS[m].color; dots.appendChild(d); });
+      box.append(dots, h("span", "n", "PLAVE"), h("span", "t", "ALL"));
+    } else {
+      box.append(h("span", "d"), h("span", "n", member || "플리"), h("span", "t", "PART"));
+    }
     wrap.append(h("span", "barline"), box);
     return wrap;
   }
@@ -334,7 +348,10 @@
           const i = ci++;
           if (i < typed.length) {
             if (S.composing && i === typed.length - 1) c.classList.add("comp");
-            else c.classList.add(typed[i] === ch ? "ok" : "bad");
+            else {
+              c.classList.add(typed[i] === ch ? "ok" : "bad");
+              if (typed[i] === ch && L.member === ALL && seg.type !== "chant" && ch !== " ") c.style.color = rainbowColor(i);
+            }
           } else if (i === typed.length) c.classList.add("cur");
           span.appendChild(c);
         }
@@ -375,7 +392,9 @@
       else prev.appendChild(h("span", seg.type === "bold" ? "b" : seg.type === "chant" ? "c" : "", seg.text));
     });
     const who = h("span", "m");
-    who.append(h("i"), h("span", null, N.member || "플리"));
+    const dot = h("i");
+    if (N.member === ALL) dot.style.background = RAINBOW;
+    who.append(dot, h("span", null, N.member || "플리"));
     prev.appendChild(who);
     box.appendChild(prev);
   }

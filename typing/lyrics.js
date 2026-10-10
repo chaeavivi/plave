@@ -4,6 +4,8 @@
   워드 문서에 적은 그대로 옮기면 됩니다. 표기 규칙:
 
     [예준] [노아] [밤비] [은호] [하민]  → 멤버 파트 (다음 태그가 나올 때까지 이어짐, 타이핑 X)
+    [PLAVE]                            → 멤버 전원 파트 (5색)
+    [플리]                             → 플리 파트
     **가사**                           → 볼드 = 플리가 멤버와 같이 부르는 파트 (🤍 표기)
     <응원법>                           → 플리만 하는 응원법 (<> 자체는 화면에 안 나옴, 흰색)
     <함성> <환호>                      → 아무거나 입력하고 Enter 하면 넘어감
@@ -342,8 +344,124 @@ I don't wanna feel anymore (nope nope nope)
     id: "way4luv",
     title: "WAY 4 LUV",
     accent: "#5DA9FF",
-    locked: true, // 가사 문서가 오면 locked 를 지우고 text 에 붙여넣기
-    text: ``,
+    text: `
+[PLAVE]
+(Way 4 Luv)
+(oh Way 4 Luv)
+(Way 4 Luv)
+
+[00:13 플리] <플 레 이브>
+
+[노아] Way 4 Luv
+Way 4 your Luv <Way 4 Luv>
+Way 4 Luv
+Way 4 your Luv <Way 4 Luv>
+거짓말이라도 믿을게 <믿을게>
+영화 같은 스토리의 끝에
+
+[밤비] It's like a movie
+우린 참 어렸었지
+저 별들을 닮기엔
+모든 게 서툴렀지 Oh yeah
+
+[하민] 뜨거웠던 숨은 꿈이 되어
+내 심장에 불을 지폈어 날 멈출 수 없도록 **더욱**
+떨어져가는 **폭포**
+
+[밤비] 처럼 내 몸을 던졌어 <어>
+그 속에 피어난 Flo**wer**
+
+[예준] 어느새 노을이 지고 있어 그곳으로
+
+<함성>
+
+[은호] Moonlight
+끝이 없는 **Midnight**
+Sunshine
+반복되는 **Highlight**
+
+[PLAVE]
+Woo woo woo woo woo woo woo
+**(Woo woo woo woo woo woo woo)**
+Woo woo woo woo woo woo woo
+**(Woo woo woo woo woo woo woo)**
+
+[노아] Way 4 Luv
+Way 4 your Luv <Way 4 Luv>
+Way 4 Luv
+Way 4 your Luv <Way 4 Luv>
+거짓말이라도 믿을게 <믿을게>
+영화 같은 스토리의 끝에
+
+[예준] Way 4 Luv
+uh Way 4 your Luv <Way 4 Luv>
+사계절이 되어줘 My Venus
+거짓말이라도 믿을래 <믿을래>
+황홀한 이 여정의 끝에
+
+[하민] 쏟아지는 유성 아래
+형 형색의 Rainbow <bow>
+지나치게 아름다워
+A to T, I'm driving now <now>
+
+[노아] There's no rush hour
+
+[은호] Let's go Eiffel Tower
+
+[밤비] Imagine we smile at the same time
+
+<함성>
+
+[예준] Moonlight
+끝이 없는 **Midnight**
+Sunshine
+반복되는 **Highlight**
+
+[PLAVE]
+Woo woo woo woo woo woo woo
+**(Woo woo woo woo woo woo woo)**
+Woo woo woo woo woo woo woo
+**(Woo woo woo woo woo woo woo)**
+
+[은호] Way 4 Luv
+Way 4 your Luv <Way 4 Luv>
+Way 4 Luv
+Way 4 your Luv <Way 4 Luv>
+거짓말이라도 믿을게 <믿을게>
+영화 같은 스토리의 끝에
+
+[예준] 같은 시선 속에 맞닿은 우리야
+
+[하민] 너와 날 닮은 이 순간
+
+[은호] 끝나지 않을 여행이라
+
+[밤비] It's a beautiful life
+
+[플리] <플 레 이 브>
+
+[노아] Way 4 Luv
+oh Way 4 Luv <웨 이 포 럽>
+거짓말이라도 믿을게 <믿을게>
+영화 같은 스토리의 끝에
+
+[예준] Way 4 Luv
+uh Way 4 your Luv
+사계절이 되어줘 My Venus
+거짓말이라도 믿을래 <믿을래>
+황홀한 이 여정의 끝에
+
+[플리] <남예준 한노아 채밤비 도은호 유하민>
+<플레이브 웨 이 폴 럽!>
+
+<함성>
+
+[밤비] Woo woo woo
+woo woo woo
+Woo woo woo woo
+woo woo woo
+Woo woo woo woo
+`,
   },
   {
     id: "pump",
