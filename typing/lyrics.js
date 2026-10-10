@@ -350,7 +350,7 @@ I don't wanna feel anymore (nope nope nope)
 (oh Way 4 Luv)
 (Way 4 Luv)
 
-[00:13 플리] <플 레 이브>
+[00:13 플리] <플 레 이 브>
 
 [노아] Way 4 Luv
 Way 4 your Luv <Way 4 Luv>
