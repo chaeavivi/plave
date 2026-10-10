@@ -621,6 +621,6 @@
   document.addEventListener("keydown", (e) => { if (e.key === "Escape") el("modal").classList.remove("open"); });
   try { el("nameInput").value = localStorage.getItem(LS.name) || ""; } catch (_) {}
 
-  window.PLAVE_TYPING = { parseTrack, strokes, state: S };
+  window.PLAVE_TYPING = { parseTrack, strokes, drawCertificate, state: S };
   selectTrack(S.trackId);
 })();
