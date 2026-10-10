@@ -26,6 +26,9 @@
   기록은 브라우저(localStorage)에 곡별 Top 5 로 저장됩니다.
 - 타수는 한글 자모 입력 수 기준입니다. (예: "닿" = ㄷ+ㅏ+ㅎ = 3타, "왜" = ㅇ+ㅗ+ㅐ = 3타)
 
+## 수정 후 반영이 안 보일 때
+`index.html` 의 `app.js?v=...` / `lyrics.js?v=...` 값을 올려 주세요(예: 날짜). 브라우저 캐시를 건너뛰고 새 파일을 받습니다.
+
 ## 곡 추가하기
 트랙 순서는 `lyrics.js` 배열 순서 그대로입니다. 06~10번(Pump Up The Volume!, Dash, 숨바꼭질, BBUU!, Born Savage)은
 `locked: true` 로 들어 있어 "준비중"으로 보입니다. 가사 문서가 준비되면 `locked: true` 줄을 지우고
