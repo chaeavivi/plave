@@ -150,7 +150,7 @@
     typed: "", composing: false, scoredUpTo: 0,
     total: 0, correct: 0, strokesOk: 0, skipped: 0,
     elapsed: 0, runningSince: null, paused: false, finished: false,
-    ticker: null, certUrl: null, enterPending: false,
+    ticker: null, certUrl: null, enterPending: false, skipNextKeyup: false,
   };
   try {
     S.chantMode = localStorage.getItem(LS.mode) !== "off";
@@ -579,19 +579,29 @@
     if (!S.composing) score();
     renderStage(); renderStats();
   });
-  // 한글 입력기는 마지막 글자를 조합 중일 때 Enter 를 "조합 확정"에 써버려서 Enter 를 두 번 눌러야 했다.
-  // Enter 를 받으면 조합이 끝난 뒤(다음 틱 또는 compositionend)에 입력값을 다시 읽어 바로 넘어간다.
+  // Enter 처리. 한글 입력기가 마지막 글자를 조합 중일 때 누른 Enter 는 "조합 확정"에 쓰인다.
+  //  - 윈도우(Chrome/Edge): keydown 이 key="Process"/229 로 들어와 Enter 인지 알 수 없고, 조합이 끝난 뒤
+  //    keyup(Enter) 만 온다 → keyup 에서 판정한다.
+  //  - 맥: keydown(Enter, isComposing) 뒤에 compositionend 가 온다 → compositionend 에서 판정한다.
+  //  - 일반 Enter: keydown 에서 바로 판정하고, 뒤따르는 keyup 은 건너뛴다.
+  const isEnterKey = (e) => e.key === "Enter" || e.keyCode === 13 || e.which === 13;
+  function enterNow() {
+    S.typed = nfc(input.value); score(); renderStage(); renderStats();
+    submit();
+  }
   input.addEventListener("keydown", (e) => {
-    if (e.key !== "Enter" && e.keyCode !== 13) return;
+    if (!isEnterKey(e)) return;
     e.preventDefault();
-    S.enterPending = true;
-    setTimeout(() => {
-      if (!S.enterPending) return;
-      if (S.composing) return; // compositionend 에서 처리
-      S.enterPending = false;
-      S.typed = nfc(input.value); score(); renderStage(); renderStats();
-      submit();
-    }, 0);
+    S.skipNextKeyup = true;
+    if (S.composing || e.isComposing) { S.enterPending = true; return; }
+    enterNow();
+  });
+  input.addEventListener("keyup", (e) => {
+    if (!isEnterKey(e)) return;
+    e.preventDefault();
+    if (S.skipNextKeyup) { S.skipNextKeyup = false; return; }
+    S.composing = false; S.enterPending = false;
+    enterNow();
   });
   el("goBtn").addEventListener("click", () => { if (isComplete()) submit(); else skip(); input.focus(); });
   el("restartBtn").addEventListener("click", reset);
