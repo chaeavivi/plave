@@ -35,3 +35,8 @@ npm run dev               # http://localhost:3000
 ## 배포
 Vercel 권장. 배포 시 SQLite 대신 Postgres 등 관리형 DB로 교체하고
 `prisma/schema.prisma`의 `provider`와 `DATABASE_URL`을 함께 변경하세요.
+
+## PLAVE 응원법 타자 연습 ⌨️
+`typing/` 폴더에 서버 없이 도는 **플레이브 응원법 타자 연습** 페이지가 있습니다.
+`typing/index.html` 을 열면 바로 실행되고, 가사는 `typing/lyrics.js` 에서 워드 문서 표기 그대로
+(`[멤버]`, `**같이 부르는 파트**`, `<응원법>`, `<함성>`, `[시간]`) 관리합니다. 자세한 규칙은 `typing/README.md` 참고.
