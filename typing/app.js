@@ -150,7 +150,7 @@
     typed: "", composing: false, scoredUpTo: 0,
     total: 0, correct: 0, strokesOk: 0, skipped: 0,
     elapsed: 0, runningSince: null, paused: false, finished: false,
-    ticker: null, certUrl: null,
+    ticker: null, certUrl: null, enterPending: false,
   };
   try {
     S.chantMode = localStorage.getItem(LS.mode) !== "off";
@@ -569,15 +569,29 @@
   /* ---------- 이벤트 ---------- */
   const input = el("typing");
   input.addEventListener("compositionstart", () => { S.composing = true; });
-  input.addEventListener("compositionend", () => { S.composing = false; S.typed = nfc(input.value); score(); renderStage(); renderStats(); });
+  input.addEventListener("compositionend", () => {
+    S.composing = false; S.typed = nfc(input.value); score(); renderStage(); renderStats();
+    if (S.enterPending) { S.enterPending = false; submit(); }
+  });
   input.addEventListener("input", () => {
     if (S.paused || S.finished) return;
     S.typed = nfc(input.value);
     if (!S.composing) score();
     renderStage(); renderStats();
   });
+  // 한글 입력기는 마지막 글자를 조합 중일 때 Enter 를 "조합 확정"에 써버려서 Enter 를 두 번 눌러야 했다.
+  // Enter 를 받으면 조합이 끝난 뒤(다음 틱 또는 compositionend)에 입력값을 다시 읽어 바로 넘어간다.
   input.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") { e.preventDefault(); if (!S.composing || !e.isComposing) submit(); }
+    if (e.key !== "Enter" && e.keyCode !== 13) return;
+    e.preventDefault();
+    S.enterPending = true;
+    setTimeout(() => {
+      if (!S.enterPending) return;
+      if (S.composing) return; // compositionend 에서 처리
+      S.enterPending = false;
+      S.typed = nfc(input.value); score(); renderStage(); renderStats();
+      submit();
+    }, 0);
   });
   el("goBtn").addEventListener("click", () => { if (isComplete()) submit(); else skip(); input.focus(); });
   el("restartBtn").addEventListener("click", reset);
