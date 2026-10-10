@@ -9,6 +9,7 @@
     <함성> <환호>                      → 아무거나 입력하고 Enter 하면 넘어감
     [0:05 ~0:09] [3:25 플리]           → 시간 표기 (화면에만 표시, 타이핑 X)
     빈 줄                              → 단락 구분 (무시)
+    locked: true                       → 아직 가사가 없는 트랙 (준비중으로 표시)
     줄바꿈                              → 줄바꿈 한 곳에서 그대로 끊어서 연습
 
   "응원법 포함 OFF" 모드에서는 <> 안의 내용이 빠지고, <>만 있는 줄은 건너뜁니다.
@@ -83,10 +84,9 @@ oh-oh. uh-oh
 
 [예준] 매일 이렇게 난 늘 혼잣말을 해 Always
 **기다릴게**
-`,
+`
   },
-  {
-    id: "pixel",
+  {id: "pixel",
     title: "Pixel World",
     accent: "#5DA9FF",
     text: `
@@ -189,10 +189,68 @@ We show another world
 **Hey ho Hey ho**
 오늘이야 let's rock all night
 **Come in our pixel world**
+`},
+  {id: "waeyo",
+    title: "왜요 왜요 왜?",
+    accent: "#FF6B6B",
+    text: `
+[0:05 ~0:09] <플 레 이 브 왜 요 왜요왜>
+
+[은호] Make you go **click click**
+Make you go **mad mad**
+Make you go **rec rec**
+
+[하민] I know I know 뻔해
+
+[예준] 너 정말 왜요 **왜요 왜**
+왜요 **왜요 왜**
+I don't wanna hear anymore **(nope nope nope)**
+저한테 왜요 **왜요 왜**
+왜요 **왜요 왜**
+I don't wanna feel anymore (nope nope nope)
+
+<함성>
+
+[하민] We make a trend 흔해빠진 밈들은 전부 fuck off **(넣어둬)**
+We make a friend 트렌드를 아는 freak 모두 모여 **(여기로)**
+
+[은호] 멋을 아는 shake it **(뿌뿌)**
+Muscle 위한 프로틴 **(yeah buddy)**
+안오는 놈들은 뭐야
+나 집에 안갈꼬야 <가지마>
+
+[밤비] Tell me what you want 더 보여줄게
+Tell me what you do I'll be your Rolex
+
+<함성>
+
+[예준] 너 정말 왜요 **왜요 왜**
+왜요 **왜요 왜**
+I don't wanna hear anymore **(nope nope nope)**
+저한테 왜요 **왜요 왜**
+왜요 **왜요 왜**
+I don't wanna feel anymore (nope nope nope)
+
+<함성>
+
+[노아] Day & night 언제나 너의 곁에 있을게 (always)
+이런말 하고 싶지
+널 기다린 나란 말야 (bow wow)
+<기다릴게>
+
+[예준] 너 정말 왜요 **왜요 왜**
+왜요 **왜요 왜**
+I don't wanna hear anymore **(nope nope nope)**
+저한테 왜요 **왜요 왜**
+왜요 **왜요 왜**
+I don't wanna feel anymore (nope nope nope)
+
+[2:15~]
+<남예준 한노아 채밤비 도은호 유하민>
+<사랑해 플 레 이 브>
 `,
   },
-  {
-    id: "sixth-summer",
+  {id: "sixth-summer",
     title: "여섯 번째 여름",
     accent: "#2ECC71",
     text: `
@@ -278,67 +336,47 @@ We show another world
 꿈꿨어
 
 <환호>
-`,
+`},
+  {
+    id: "way4luv",
+    title: "WAY 4 LUV",
+    accent: "#5DA9FF",
+    locked: true, // 가사 문서가 오면 locked 를 지우고 text 에 붙여넣기
+    text: ``,
   },
   {
-    id: "waeyo",
-    title: "왜요 왜요 왜?",
+    id: "pump",
+    title: "Pump Up The Volume!",
+    accent: "#2ECC71",
+    locked: true, // 가사 문서가 오면 locked 를 지우고 text 에 붙여넣기
+    text: ``,
+  },
+  {
+    id: "dash",
+    title: "Dash",
     accent: "#FF6B6B",
-    text: `
-[0:05 ~0:09] <플 레 이 브 왜 요 왜요왜>
-
-[은호] Make you go **click click**
-Make you go **mad mad**
-Make you go **rec rec**
-
-[하민] I know I know 뻔해
-
-[예준] 너 정말 왜요 **왜요 왜**
-왜요 **왜요 왜**
-I don't wanna hear anymore **(nope nope nope)**
-저한테 왜요 **왜요 왜**
-왜요 **왜요 왜**
-I don't wanna feel anymore (nope nope nope)
-
-<함성>
-
-[하민] We make a trend 흔해빠진 밈들은 전부 fuck off **(넣어둬)**
-We make a friend 트렌드를 아는 freak 모두 모여 **(여기로)**
-
-[은호] 멋을 아는 shake it **(뿌뿌)**
-Muscle 위한 프로틴 **(yeah buddy)**
-안오는 놈들은 뭐야
-나 집에 안갈꼬야 <가지마>
-
-[밤비] Tell me what you want 더 보여줄게
-Tell me what you do I'll be your Rolex
-
-<함성>
-
-[예준] 너 정말 왜요 **왜요 왜**
-왜요 **왜요 왜**
-I don't wanna hear anymore **(nope nope nope)**
-저한테 왜요 **왜요 왜**
-왜요 **왜요 왜**
-I don't wanna feel anymore (nope nope nope)
-
-<함성>
-
-[노아] Day & night 언제나 너의 곁에 있을게 (always)
-이런말 하고 싶지
-널 기다린 나란 말야 (bow wow)
-<기다릴게>
-
-[예준] 너 정말 왜요 **왜요 왜**
-왜요 **왜요 왜**
-I don't wanna hear anymore **(nope nope nope)**
-저한테 왜요 **왜요 왜**
-왜요 **왜요 왜**
-I don't wanna feel anymore (nope nope nope)
-
-[2:15~]
-<남예준 한노아 채밤비 도은호 유하민>
-<사랑해 플 레 이 브>
-`,
+    locked: true, // 가사 문서가 오면 locked 를 지우고 text 에 붙여넣기
+    text: ``,
+  },
+  {
+    id: "hide",
+    title: "숨바꼭질",
+    accent: "#A78BFA",
+    locked: true, // 가사 문서가 오면 locked 를 지우고 text 에 붙여넣기
+    text: ``,
+  },
+  {
+    id: "bbuu",
+    title: "BBUU!",
+    accent: "#FFD700",
+    locked: true, // 가사 문서가 오면 locked 를 지우고 text 에 붙여넣기
+    text: ``,
+  },
+  {
+    id: "born-savage",
+    title: "Born Savage",
+    accent: "#2ECC71",
+    locked: true, // 가사 문서가 오면 locked 를 지우고 text 에 붙여넣기
+    text: ``,
   },
 ];

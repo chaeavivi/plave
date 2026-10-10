@@ -58,6 +58,16 @@
   .track .dot{width:8px;height:8px;border-radius:50%;background:var(--c)}
   .track.active{background:#fff;color:#000;transform:scale(1.03);box-shadow:0 0 0 1px var(--c),0 0 24px color-mix(in srgb,var(--c) 45%,transparent)}
   .track.active .dot{box-shadow:0 0 10px var(--c)}
+  .track.locked{opacity:.6}
+  .track.locked .lock{font-size:11px}
+  .track.locked .soon{padding:1px 6px;border-radius:999px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.1);font-size:9px;letter-spacing:.12em;color:rgba(255,255,255,.45)}
+  .track.locked.active{background:#121212;color:rgba(255,255,255,.7);box-shadow:0 0 0 1px rgba(255,255,255,.2);transform:none}
+  .lockbox{display:flex;flex-direction:column;align-items:center;gap:12px;padding:32px 0 16px;text-align:center}
+  .lockbox .ico{width:72px;height:72px;border-radius:20px;background:rgba(255,255,255,.04);border:1px solid var(--line);display:grid;place-items:center;font-size:32px}
+  .lockbox h2{margin:4px 0 0;font-size:32px;font-weight:900;letter-spacing:-.02em;line-height:1}
+  .lockbox .sub{font-size:13px;font-weight:700;color:rgba(255,255,255,.4)}
+  .lockbox .btn-back{margin-top:10px;padding:12px 24px;border-radius:999px;background:#fff;color:#000;font-size:12px;font-weight:900;letter-spacing:.1em;box-shadow:0 0 24px rgba(255,255,255,.25);transition:.15s}
+  .lockbox .btn-back:hover{box-shadow:0 0 32px rgba(255,255,255,.4);transform:scale(1.02)}
 
   .toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:12px}
   .namebox{display:flex;align-items:center;gap:8px;padding:7px 12px;border-radius:999px;background:#000;border:1px solid var(--line-2)}
@@ -286,7 +296,7 @@
       <div class="card-in">
         <div class="card-head">
           <div class="pills">
-            <span class="pill solid" id="trackPill">TRACK 01/04</span>
+            <span class="pill solid" id="trackPill">TRACK 01/10</span>
             <span class="pill" id="linePill">01 / 00</span>
             <span class="pill dim" id="modePill">FANCHANT ON</span>
             <span class="member-dots">

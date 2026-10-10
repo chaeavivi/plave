@@ -153,6 +153,7 @@
   if (!TRACKS.some((t) => t.id === S.trackId)) S.trackId = TRACKS[0].id;
 
   const track = () => TRACKS.find((t) => t.id === S.trackId);
+  const isLocked = () => !!track().locked || !track().text.trim();
   const trackIndex = () => TRACKS.findIndex((t) => t.id === S.trackId);
   const line = () => S.lines[S.idx];
   const elapsedMs = () => S.elapsed + (S.runningSince ? Date.now() - S.runningSince : 0);
@@ -175,9 +176,11 @@
     stopTimer();
     Object.assign(S, { idx: 0, typed: "", composing: false, scoredUpTo: 0, total: 0, correct: 0, strokesOk: 0, skipped: 0,
       elapsed: 0, paused: false, finished: false });
-    S.lines = parseTrack(track().text, S.chantMode);
+    S.lines = isLocked() ? [] : parseTrack(track().text, S.chantMode);
     el("typing").value = "";
-    el("typing").disabled = false;
+    el("typing").disabled = isLocked();
+    el("restartBtn").disabled = isLocked();
+    el("pauseBtn").disabled = isLocked();
     el("pauseBtn").textContent = "⏸ PAUSE";
     el("pauseBtn").classList.remove("gold");
     el("modal").classList.remove("open");
@@ -257,24 +260,26 @@
     const box = el("tracks");
     box.innerHTML = "";
     TRACKS.forEach((t, i) => {
-      const b = h("button", "track" + (t.id === S.trackId ? " active" : ""));
+      const locked = !!t.locked || !t.text.trim();
+      const b = h("button", "track" + (t.id === S.trackId ? " active" : "") + (locked ? " locked" : ""));
       b.type = "button";
       b.style.setProperty("--c", t.accent || "#5DA9FF");
-      b.append(h("span", "num", pad2(i + 1)), h("span", "dot"), h("span", null, t.title));
+      b.append(h("span", "num", pad2(i + 1)), locked ? h("span", "lock", "🔒") : h("span", "dot"), h("span", null, t.title));
+      if (locked) b.appendChild(h("span", "soon", "준비중"));
       b.addEventListener("click", () => (t.id === S.trackId ? reset() : selectTrack(t.id)));
       box.appendChild(b);
     });
     el("trackChip").innerHTML = "";
     const dot = h("i"); dot.style.cssText = `width:8px;height:8px;border-radius:50%;display:inline-block;background:${track().accent};box-shadow:0 0 10px ${track().accent}`;
-    el("trackChip").append(dot, h("span", null, track().title), h("span", null, "·"), h("span", null, `${S.lines.length}줄`));
+    el("trackChip").append(dot, h("span", null, track().title), h("span", null, "·"), h("span", null, isLocked() ? "🔒 준비중" : `${S.lines.length}줄`));
     el("modeBtn").textContent = S.chantMode ? "응원법 포함 ON" : "응원법 포함 OFF";
     el("modeBtn").classList.toggle("on", S.chantMode);
   }
 
   function renderHead() {
     el("trackPill").textContent = `TRACK ${pad2(trackIndex() + 1)}/${pad2(TRACKS.length)}`;
-    el("linePill").textContent = `${pad2(Math.min(S.idx + 1, S.lines.length))} / ${pad2(S.lines.length)}`;
-    el("modePill").textContent = S.chantMode ? "FANCHANT ON" : "LYRICS ONLY";
+    el("linePill").textContent = isLocked() ? "LOCKED" : `${pad2(Math.min(S.idx + 1, S.lines.length))} / ${pad2(S.lines.length)}`;
+    el("modePill").textContent = isLocked() ? "가사 문서 대기중" : S.chantMode ? "FANCHANT ON" : "LYRICS ONLY";
     el("progressBar").style.width = progress() + "%";
   }
 
@@ -291,6 +296,20 @@
     const L = line();
     const badges = el("badges"), lyric = el("lyric");
     badges.innerHTML = ""; lyric.innerHTML = "";
+    const locked = isLocked();
+    el("inputwrap").style.display = locked ? "none" : "";
+    el("status").style.display = locked ? "none" : "";
+    el("nextup").style.display = locked ? "none" : "";
+    if (locked) {
+      const box = h("div", "lockbox");
+      box.append(h("div", "ico", "🔒"), h("h2", null, "준비중"), h("div", "sub", "가사 문서가 오면 열려요"));
+      const back = h("button", "btn-back", "첫 번째 곡으로 돌아가기");
+      back.type = "button";
+      back.addEventListener("click", () => selectTrack(TRACKS.find((t) => !t.locked && t.text.trim()).id));
+      box.appendChild(back);
+      lyric.appendChild(box);
+      return;
+    }
     if (!L) return;
     const color = memberColor(L.member);
     lyric.style.setProperty("--c", color);
