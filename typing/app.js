@@ -525,7 +525,8 @@
       x.strokeStyle = i === 0 ? v.accent + "88" : "rgba(255,255,255,.12)"; x.lineWidth = 1; x.strokeRect(cx, cy, cw, chh);
       x.fillStyle = "rgba(255,255,255,.35)"; x.font = font(800, 11); x.fillText(c[0], cx + 18, cy + 24);
       x.fillStyle = "#fff"; x.font = font(900, 32); x.fillText(c[1], cx + 18, cy + 64);
-      if (c[2]) { x.fillStyle = "rgba(255,255,255,.35)"; x.font = font(700, 14); x.fillText(c[2], cx + 18 + x.measureText(c[1]).width + 4, cy + 64); }
+      const numW = x.measureText(c[1]).width; // 큰 글꼴 상태에서 숫자 폭을 재야 단위가 겹치지 않는다
+      if (c[2]) { x.fillStyle = "rgba(255,255,255,.35)"; x.font = font(700, 14); x.fillText(c[2], cx + 18 + numW + 6, cy + 64); }
     });
     x.fillStyle = v.pass ? "#FFD700" : "rgba(255,255,255,.65)"; x.font = v.pass ? font(900, 34) : font(800, 24);
     x.fillText(v.pass ? (v.perfect ? "🎉 PLLI 합격증 · PERFECT" : "🎖️ PLLI 합격증") : "PLLI 연습생 - 조금만 더!", 56, 460);
