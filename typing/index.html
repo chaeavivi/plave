@@ -215,11 +215,11 @@
   .legend .how{font-size:10px;color:rgba(255,255,255,.45);line-height:1.6;padding:4px 2px;display:block;border:0;background:none;font-weight:600}
   .legend .how b{color:#fff}
 
-  footer{padding:0 0 40px;text-align:center}
-  footer .a{font-size:11px;color:#666;font-weight:800;letter-spacing:.12em}
-  footer .contact{margin-top:6px;font-size:11px;color:rgba(255,255,255,.3);letter-spacing:.04em}
-  footer .contact a{color:rgba(255,255,255,.45);text-decoration:none;border-bottom:1px dotted rgba(255,255,255,.25)}
-  footer .contact a:hover{color:#fff}
+  footer{margin-top:40px;padding:32px 16px 96px;text-align:center;border-top:1px solid var(--line)}
+  footer .a{font-size:11px;color:#777;font-weight:800;letter-spacing:.12em}
+  footer .contact{margin-top:14px;display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border-radius:999px;background:rgba(255,255,255,.05);border:1px solid var(--line);font-size:13px;color:rgba(255,255,255,.6)}
+  footer .contact a{color:#fff;font-weight:700;text-decoration:none;border-bottom:1px dotted rgba(255,255,255,.4)}
+  footer .contact a:hover{border-bottom-color:#fff}
 
   /* modal */
   .modal{position:fixed;inset:0;z-index:50;display:none;place-items:center;padding:16px;background:rgba(0,0,0,.8);backdrop-filter:blur(14px);overflow-y:auto}
@@ -375,7 +375,7 @@
 
 <footer class="wrap">
   <div class="a">Made for PLLI</div>
-  <div class="contact">오류 접수 | <a href="mailto:bluenighttenderwaves@gmail.com">bluenighttenderwaves@gmail.com</a></div>
+  <div class="contact"><span>✉️ 오류 접수</span><span style="opacity:.4">|</span><a href="mailto:bluenighttenderwaves@gmail.com">bluenighttenderwaves@gmail.com</a></div>
 </footer>
 
 <div class="modal" id="modal">
@@ -398,7 +398,7 @@
 </div>
 
 <!-- 수정할 때마다 v= 값을 올리면 브라우저 캐시를 건너뛰고 새 파일을 받습니다 -->
-<script src="lyrics.js?v=20261011d"></script>
-<script src="app.js?v=20261011d"></script>
+<script src="lyrics.js?v=20261011e"></script>
+<script src="app.js?v=20261011e"></script>
 </body>
 </html>
