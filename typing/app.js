@@ -524,12 +524,24 @@
     return cv.toDataURL("image/png");
   }
 
-  function downloadCert() {
+  async function downloadCert() {
     if (!S.certUrl) return;
-    const a = document.createElement("a");
     const name = (el("nameInput").value || "").trim();
+    const filename = `PLAVE_${S.trackId}${name ? "_" + name : ""}_${fmtDate().replace(/\./g, "")}_${accuracy()}p.png`;
+    // claude.ai 아티팩트 뷰어 안에서는 일반 다운로드 링크가 막혀 있어 downloads 기능으로 저장한다.
+    if (window.claude && typeof window.claude.use === "function") {
+      try {
+        const dl = await window.claude.use("downloads");
+        if (dl) {
+          const blob = await (await fetch(S.certUrl)).blob();
+          await dl.save({ filename, data: blob });
+          return;
+        }
+      } catch (e) { if (e && e.code === "declined") return; }
+    }
+    const a = document.createElement("a");
     a.href = S.certUrl;
-    a.download = `PLAVE_${S.trackId}${name ? "_" + name : ""}_${fmtDate().replace(/\./g, "")}_${accuracy()}p.png`;
+    a.download = filename;
     document.body.appendChild(a); a.click(); a.remove();
   }
 
