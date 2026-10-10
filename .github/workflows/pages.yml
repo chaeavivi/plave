@@ -1,0 +1,40 @@
+# GitHub Pages 배포: typing/ (응원법 타자 연습) + simple/ (추천템 간단 버전)
+# 기본 브랜치에 푸시될 때마다 자동으로 배포됩니다.
+name: Deploy GitHub Pages
+
+on:
+  push:
+    branches: [claude/user-recommendation-page-espyyt]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: 정적 파일 모으기
+        run: |
+          mkdir -p _site
+          cp -r typing _site/typing
+          cp -r simple _site/simple
+          cp .github/pages-index.html _site/index.html
+      - uses: actions/configure-pages@v5
+        with:
+          enablement: true
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - id: deployment
+        uses: actions/deploy-pages@v4
