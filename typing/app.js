@@ -211,6 +211,7 @@
     if (arr.length < S.scoredUpTo) S.scoredUpTo = arr.length;
     if (L.kind === "free") { if (arr.length) startTimer(); S.scoredUpTo = arr.length; return; }
     for (let i = S.scoredUpTo; i < arr.length; i++) {
+      if (i >= L.cells.length && arr[i] === " ") continue; // 줄 끝에 딸려온 공백은 채점하지 않음
       startTimer();
       S.total++;
       if (L.cells[i] && L.cells[i].ch === arr[i]) { S.correct++; S.strokesOk += strokes(arr[i]); }
@@ -222,7 +223,7 @@
     const L = line();
     if (!L) return false;
     if (L.kind === "free") return S.typed.trim().length > 0;
-    return S.typed === L.target;
+    return S.typed === L.target || S.typed === L.target + " ";
   }
 
   function advance() {
@@ -357,9 +358,10 @@
         }
         lyric.appendChild(span);
       });
-      if (typed.length > L.cells.length) {
+      const extra = typed.slice(L.cells.length).join("").replace(/ $/, "");
+      if (extra) {
         const ex = h("span", "seg");
-        ex.appendChild(h("span", "ch extra", typed.slice(L.cells.length).join("")));
+        ex.appendChild(h("span", "ch extra", extra));
         lyric.appendChild(ex);
       }
     }
@@ -371,7 +373,7 @@
     const st = el("status");
     st.className = "status" + (ready ? " ready" : "");
     if (ready) st.textContent = "ENTER → 다음 가사 ↵";
-    else if (typed.length > L.cells.length) st.innerHTML = "입력이 너무 길어요 · <b>Backspace</b>로 지워주세요";
+    else if (typed.length > L.cells.length + 1 || (typed.length === L.cells.length + 1 && typed[typed.length - 1] !== " ")) st.innerHTML = "입력이 너무 길어요 · <b>Backspace</b>로 지워주세요";
     else if (S.typed.length) st.innerHTML = "정확히 입력 후 <b>ENTER</b>를 눌러 넘어가세요";
     else st.textContent = "";
 
@@ -571,11 +573,18 @@
   const input = el("typing");
   input.addEventListener("compositionstart", () => { S.composing = true; });
   input.addEventListener("compositionend", () => {
-    S.composing = false; S.typed = nfc(input.value); score(); renderStage(); renderStats();
+    S.composing = false; tidySpaces(); S.typed = nfc(input.value); score(); renderStage(); renderStats();
     if (S.enterPending) { S.enterPending = false; submit(); }
   });
+  // 일부 키보드/입력기에서 공백을 지웠다 다시 칠 때 공백이 두 개 들어오는 경우가 있어
+  // 조합 중이 아닐 때는 연속 공백을 하나로 합치고 맨 앞 공백은 지운다.
+  function tidySpaces() {
+    const v = input.value.replace(/ {2,}/g, " ").replace(/^ +/, "");
+    if (v !== input.value) input.value = v;
+  }
   input.addEventListener("input", () => {
     if (S.paused || S.finished) return;
+    if (!S.composing) tidySpaces();
     S.typed = nfc(input.value);
     if (!S.composing) score();
     renderStage(); renderStats();
