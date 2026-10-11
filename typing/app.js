@@ -573,8 +573,9 @@
   const input = el("typing");
   input.addEventListener("compositionstart", () => { S.composing = true; });
   input.addEventListener("compositionend", () => {
-    S.composing = false; tidySpaces(); S.typed = nfc(input.value); score(); renderStage(); renderStats();
-    if (S.enterPending) { S.enterPending = false; submit(); }
+    S.composing = false; tidySpaces(); S.typed = nfc(input.value); score();
+    if (S.enterPending) { S.enterPending = false; renderStage(); renderStats(); submit(); return; }
+    renderSoon();
   });
   // 일부 키보드/입력기에서 공백을 지웠다 다시 칠 때 공백이 두 개 들어오는 경우가 있어
   // 조합 중이 아닐 때는 연속 공백을 하나로 합치고 맨 앞 공백은 지운다.
@@ -582,12 +583,20 @@
     const v = input.value.replace(/ {2,}/g, " ").replace(/^ +/, "");
     if (v !== input.value) input.value = v;
   }
+  // 글자를 칠 때마다 화면을 바로 다시 그리지 않고 다음 프레임에 한 번만 그린다.
+  // (느린 기기·앱 내 브라우저에서 한글 입력기가 끊기는 여지를 줄이기 위해 input 핸들러는 가볍게 유지)
+  let renderQueued = false;
+  function renderSoon() {
+    if (renderQueued) return;
+    renderQueued = true;
+    requestAnimationFrame(() => { renderQueued = false; renderStage(); renderStats(); });
+  }
   input.addEventListener("input", () => {
     if (S.paused || S.finished) return;
     if (!S.composing) tidySpaces();
     S.typed = nfc(input.value);
     if (!S.composing) score();
-    renderStage(); renderStats();
+    renderSoon();
   });
   // Enter 처리. 한글 입력기가 마지막 글자를 조합 중일 때 누른 Enter 는 "조합 확정"에 쓰인다.
   //  - 윈도우(Chrome/Edge): keydown 이 key="Process"/229 로 들어와 Enter 인지 알 수 없고, 조합이 끝난 뒤
