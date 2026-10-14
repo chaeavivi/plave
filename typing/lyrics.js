@@ -527,7 +527,7 @@ When we're apart, it never grows **tired**
 I need it, <We need you!>
 can you hear me <I can hear you!>
 
-[은호] I coul**dn't wait till you pull me up** <up>
+[은호] I couldn't wait till you pull me up <up>
 When a star falls on you
 **너를 위해서**
 **I want it to be close to you right now**
