@@ -9,7 +9,9 @@
     **가사**                           → 볼드 = 플리가 멤버와 같이 부르는 파트 (🤍 표기)
     <응원법>                           → 플리만 하는 응원법 (<> 자체는 화면에 안 나옴, 흰색)
     <함성> <환호>                      → 아무거나 입력하고 Enter 하면 넘어감
-    [0:05 ~0:09] [3:25 플리]           → 시간 표기 (화면에만 표시, 타이핑 X)
+    [0:05 ~0:09] [3:25 플리] (00:05)   → 시간 표기 (화면에만 표시, 타이핑 X)
+    __한 템포 쉬고__                   → 안내문 (밑줄). 화면에만 흐리게 표시, 타이핑 X
+    isNew: true                        → 트랙 칩에 NEW 표시
     빈 줄                              → 단락 구분 (무시)
     locked: true                       → 아직 가사가 없는 트랙 (준비중으로 표시)
     줄바꿈                              → 줄바꿈 한 곳에서 그대로 끊어서 연습
@@ -497,5 +499,95 @@ Woo woo woo woo
     accent: "#2ECC71",
     locked: true, // 가사 문서가 오면 locked 를 지우고 text 에 붙여넣기
     text: ``,
+  },
+  {
+    id: "star-trace",
+    title: "Star Trace",
+    accent: "#FFD700",
+    isNew: true, // 트랙 칩에 NEW 표시
+    text: `
+[플리] <환호>
+
+(00:05)
+[플리] <남예준 한노아 채밤비 도은호 유하민>
+__한 템포 쉬고__ <플! 레! 이! 브!>
+
+[밤비] I'm alone, but I don't really feel alone
+언제든 어디서든 보이니까 <언제나! 함께해!>
+Don't wanna live without
+stars that light the sky
+just, tell me what it's like,
+to see the other side
+
+(00:31)
+<Start Race!>
+
+[하민] I'm stuck here loving afar, my **desire**
+When we're apart, it never grows **tired**
+I need it, <We need you!>
+can you hear me <I can hear you!>
+
+[은호] I coul**dn't wait till you pull me up** <up>
+When a star falls on you
+**너를 위해서**
+**I want it to be close to you right now**
+
+[예준] I can't contain this,
+you light me up <up>
+When a star falls on you
+**너를 위해서**
+**I want it to be close to you right now**
+
+<HO!>
+
+[노아] Moves like a signal pulling me **again**
+떨어지는 별의 선이 **빛날 때**
+Baby it's a feeling that I've **never felt**
+Trust me, I will hold you, and we'll **be okay**
+
+[예준] I'm stuck here loving afar,
+you're my **desire**
+When we're apart,
+it never grows **tired**
+
+[하민] I need it, <We need you!>,
+can you hear me <I can hear you!>
+
+[밤비] I couldn't wait till you pull me up <up>
+When a star falls on you
+**너를 위해서**
+**I want it to be close to you right now**
+
+[노아] I can't contain this,
+you light me up <up>
+When a star falls on you
+**너를 위해서**
+**I want it to be close to you right now**
+
+<환호>
+
+[PLAVE] (워-어~ 어어어)
+**(워-어~ 어어어)**
+
+[은호] This is the time of our lives
+
+[PLAVE] **Go**
+
+[플리] <남예준 한노아 채밤비 도은호 유하민>
+__한 템포 쉬고__ <플! 레! 이! 브!>
+
+[플리] <남예준 한노아 채밤비 도은호 유하민>
+__한 템포 쉬고__ <플! 레! 이! 브!>
+
+[은호] I couldn't wait till you pull me up <up>
+When a star falls on you
+**너를 위해서**
+**I want it to be close to you right now**
+
+[예준] I can't contain this, you light me up <up>
+When a star falls on you
+**너를 위해서**
+**I want it to be close to you right now**
+`,
   },
 ];
