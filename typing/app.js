@@ -13,12 +13,13 @@
   const ALL = "PLAVE";
   const MEMBER_ORDER = ["예준", "노아", "밤비", "은호", "하민"];
   const MEMBER_RE = /\[(예준|노아|밤비|은호|하민|PLAVE|PALVE|플리)\]/gi;
-  const TIME_RE = /\[([^\]]*\d{1,2}:\d{2}[^\]]*)\]/g;
+  const TIME_RE = /\[([^\]]*\d{1,2}:\d{2}[^\]]*)\]|\(([^)]*\d{1,2}:\d{2}[^)]*)\)/g;
   const FREE_RE = /^(함성|환호)\s*!?$/;
   const PASS_ACCURACY = 95;
   const LS = { records: "plave-typing-records-v1", name: "plave-typing-name", mode: "plave-typing-mode", track: "plave-typing-track" };
 
-  const nfc = (s) => (s || "").normalize("NFC");
+  // NFC 정규화 + 둥근 따옴표(’ “ ”)를 키보드 따옴표로 통일 (문서·스마트 구두점 입력 모두 대응)
+  const nfc = (s) => (s || "").normalize("NFC").replace(/[\u2018\u2019\u02BC]/g, "'").replace(/[\u201C\u201D]/g, '"');
   const chars = (s) => Array.from(nfc(s));
   const pad2 = (n) => String(n).padStart(2, "0");
   const fmtTime = (ms, long) => {
@@ -57,9 +58,11 @@
   // 한 줄 → { member, time, kind:'lyric'|'chant'|'free', segments:[{type:'text'|'bold'|'chant'|'divider', text}], cells, target }
   function tokenize(s) {
     const out = [];
-    const re = /\*\*([^*]+?)\*\*|<([^>]*)>|([^*<]+|\*|<)/g;
+    const re = /__([^_]+?)__|\*\*([^*]+?)\*\*|<([^>]*)>|([^*<_]+|\*|<|_)/g;
     let m;
     while ((m = re.exec(s))) {
+      if (m[1] != null) { out.push({ type: "note", text: m[1].trim() }); continue; }
+      m = [m[0], m[2], m[3], m[4]];
       if (m[1] != null) {
         const t = m[1];
         const lead = t.match(/^\s*/)[0], trail = t.match(/\s*$/)[0];
@@ -98,8 +101,15 @@
       if (l.text) break;
       merged.pop();
     }
+    // 안내문(note) 옆에 붙은 공백은 타이핑 대상에서 뺀다
+    merged.forEach((seg, i) => {
+      if (seg.type !== "text") return;
+      if (merged[i - 1] && merged[i - 1].type === "note") seg.text = seg.text.replace(/^\s+/, "");
+      if (merged[i + 1] && merged[i + 1].type === "note") seg.text = seg.text.replace(/\s+$/, "");
+    });
     return merged.filter((s) => s.type === "divider" || s.text.length);
   }
+  const isTyped = (seg) => seg.type !== "note"; // 안내문은 화면에만 표시
 
   function parseTrack(text, chantMode) {
     const lines = [];
@@ -108,7 +118,7 @@
       let s = raw.trim();
       if (!s) continue;
       const times = [];
-      s = s.replace(TIME_RE, (_, t) => { times.push(t.trim()); return " "; });
+      s = s.replace(TIME_RE, (_, a, b) => { times.push((a || b).trim()); return " "; });
       s = s.replace(MEMBER_RE, (_, name) => {
         const n = name.toUpperCase();
         member = n === "PLAVE" || n === "PALVE" ? ALL : name === "플리" ? null : name;
@@ -119,15 +129,17 @@
       const time = times[0] || pendingTime; pendingTime = null;
 
       let segs = normalizeSegments(tokenize(s));
-      const allChant = segs.length > 0 && segs.every((x) => x.type === "chant" || x.type === "divider");
-      const isFree = allChant && segs.length === 1 && FREE_RE.test(segs[0].text);
+      const typedSegs = segs.filter(isTyped);
+      const allChant = typedSegs.length > 0 && typedSegs.every((x) => x.type === "chant" || x.type === "divider");
+      const isFree = allChant && typedSegs.length === 1 && FREE_RE.test(typedSegs[0].text);
       if (!chantMode) {
         if (allChant) continue;
-        segs = normalizeSegments(segs.filter((x) => x.type !== "chant" && x.type !== "divider"));
+        segs = normalizeSegments(segs.filter((x) => x.type !== "chant" && x.type !== "divider" && x.type !== "note"));
         if (!segs.length) continue;
       }
+      if (!segs.some(isTyped)) continue;
       const cells = [];
-      segs.forEach((seg, si) => { for (const ch of chars(seg.text)) cells.push({ ch, si }); });
+      segs.forEach((seg, si) => { if (isTyped(seg)) for (const ch of chars(seg.text)) cells.push({ ch, si }); });
       lines.push({
         member: allChant ? null : member,
         time,
@@ -275,6 +287,7 @@
       b.style.setProperty("--c", t.accent || "#5DA9FF");
       b.append(h("span", "num", pad2(i + 1)), locked ? h("span", "lock", "🔒") : h("span", "dot"), h("span", null, t.title));
       if (locked) b.appendChild(h("span", "soon", "준비중"));
+      if (t.isNew && !locked) b.appendChild(h("span", "new", "NEW"));
       b.addEventListener("click", () => (t.id === S.trackId ? reset() : selectTrack(t.id)));
       box.appendChild(b);
     });
@@ -341,6 +354,7 @@
     } else {
       let ci = 0;
       L.segments.forEach((seg, si) => {
+        if (seg.type === "note") { lyric.appendChild(h("span", "seg note", seg.text)); return; }
         const span = h("span", "seg " + seg.type + (seg.type === "chant" && L.kind !== "chant" ? " inline" : ""));
         for (const ch of chars(seg.text)) {
           const c = h("span", "ch", ch === " " ? "·" : ch);
@@ -390,6 +404,7 @@
     prev.style.setProperty("--c", memberColor(N.member));
     if (N.kind === "free") prev.appendChild(h("span", "c", N.target));
     else N.segments.forEach((seg) => {
+      if (seg.type === "note") { prev.appendChild(h("span", "n", seg.text)); return; }
       if (seg.type === "divider") prev.appendChild(h("span", null, "/"));
       else prev.appendChild(h("span", seg.type === "bold" ? "b" : seg.type === "chant" ? "c" : "", seg.text));
     });
