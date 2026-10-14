@@ -59,6 +59,8 @@
   .track .dot{width:8px;height:8px;border-radius:50%;background:var(--c)}
   .track.active{background:#fff;color:#000;transform:scale(1.03);box-shadow:0 0 0 1px var(--c),0 0 24px color-mix(in srgb,var(--c) 45%,transparent)}
   .track.active .dot{box-shadow:0 0 10px var(--c)}
+  .track .new{padding:1px 7px;border-radius:999px;background:linear-gradient(90deg,#FF4D8D,#FFD700);color:#000;font-size:9px;font-weight:900;letter-spacing:.14em}
+  .track.active .new{box-shadow:0 0 10px rgba(255,215,0,.6)}
   .track.locked{opacity:.6}
   .track.locked .lock{font-size:11px}
   .track.locked .soon{padding:1px 6px;border-radius:999px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.1);font-size:9px;letter-spacing:.12em;color:rgba(255,255,255,.45)}
@@ -129,6 +131,8 @@
   .seg.chant{color:#fff}
   .seg.chant.inline::before{content:"🤍";font-size:.6em;margin-right:4px;line-height:1}
   .seg.divider{color:rgba(255,255,255,.3);padding:0 6px}
+  .seg.note{font-size:.55em;font-weight:700;font-style:italic;color:rgba(255,255,255,.4);padding:3px 10px;margin:0 6px;border-radius:999px;border:1px dashed rgba(255,255,255,.2);letter-spacing:.02em}
+  .nextup .prev .n{font-size:.85em;font-style:italic;color:rgba(255,255,255,.3)}
   .ch{display:inline-block;transition:color .1s;color:rgba(255,255,255,.38)}
   .ch.ok{color:var(--c)}
   .seg.bold .ch.ok{text-shadow:0 0 10px color-mix(in srgb,var(--c) 60%,transparent)}
@@ -305,7 +309,7 @@
       <div class="card-in">
         <div class="card-head">
           <div class="pills">
-            <span class="pill solid" id="trackPill">TRACK 01/10</span>
+            <span class="pill solid" id="trackPill">TRACK 01/11</span>
             <span class="pill" id="linePill">01 / 00</span>
             <span class="pill dim" id="modePill">FANCHANT ON</span>
             <span class="member-dots">
@@ -398,7 +402,7 @@
 </div>
 
 <!-- 수정할 때마다 v= 값을 올리면 브라우저 캐시를 건너뛰고 새 파일을 받습니다 -->
-<script src="lyrics.js?v=20261011g"></script>
-<script src="app.js?v=20261011g"></script>
+<script src="lyrics.js?v=20261014a"></script>
+<script src="app.js?v=20261014a"></script>
 </body>
 </html>
